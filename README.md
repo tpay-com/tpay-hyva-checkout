@@ -1,4 +1,4 @@
-# Hyvä Checkout compatybiliy for Magento2 Tpay paymebnt method 
+# Hyvä Checkout compatybiliy for Magento2 Tpay payment method 
 
 The official module for quick online payments via Tpay on the Magento 2 platform that uses Hyvä Magewire Checkout.
 

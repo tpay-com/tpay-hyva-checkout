@@ -6,7 +6,7 @@
 		"hyva-themes/magento2-compat-module-fallback": "*",
 		"hyva-themes/magento2-hyva-checkout": "*",
 		"php": "^8.1",
-		"tpaycom/magento2basic": "^2.0.8"
+		"tpaycom/magento2basic": "*"
 	},
 	"autoload": {
 		"files": [
