@@ -1,0 +1,19 @@
+{
+	"name": "tpay-com/module-hyva-checkout",
+	"description": "Hyvä Checkout compatybility for Magento2 Tpay payment module",
+	"type": "magento2-module",
+	"require": {
+		"hyva-themes/magento2-compat-module-fallback": "*",
+		"hyva-themes/magento2-hyva-checkout": "*",
+		"php": "^8.1",
+		"tpaycom/magento2basic": "^2.0.8"
+	},
+	"autoload": {
+		"files": [
+			"src/registration.php"
+		],
+		"psr-4": {
+			"TPay\\Magento\\Hyva\\": "src"
+		}
+	}
+}
