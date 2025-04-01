@@ -1,0 +1,48 @@
+<?php
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\HyvaCsp;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+/** @var HyvaCsp $hyvaCsp */
+
+?>
+<script>
+    function tpayHyvaCheckoutComponentPaymentMethodTpay() {
+        const $wire = this.$wire;
+
+        return Object.assign(
+            {
+                showChannelsSection: true,
+                showBlikInput: true,
+                showBlikAlias: (this.$el.dataset.canUseAlias === 'true'),
+                channelID: `${this.$el.dataset.preselectedGroup}`,
+            }
+            , {
+                ['tpayHyvaIsGroupActive']() {
+                    return this.channelID === `${this.$el.dataset.groupId}` ? 'tpay-active' : ''
+                },
+                ['tpayHyvaSelectGroup'](event) {
+                    this.channelID = event.target.offsetParent.dataset.groupId;
+                    $wire.selectGroup(parseInt(this.channelID));
+                    return this.channelID;
+                },
+                ['tpayHyvaHideOptions']() {
+                    this.$refs.blikCode.value || this.$refs.blikAlias.checked
+                        ? this.showChannelsSection = false
+                        : this.showChannelsSection = true;
+                    this.showBlikInput = !this.$refs.blikAlias.checked;
+                },
+            }
+        )
+    }
+
+    window.addEventListener('alpine:init', () => Alpine.data('tpayHyvaCheckoutComponentPaymentMethodTpay', tpayHyvaCheckoutComponentPaymentMethodTpay), {once: true});
+</script>
+<?php $hyvaCsp->registerInlineScript() ?>

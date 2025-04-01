@@ -10,140 +10,14 @@ use Tpay\Magento\Hyva\ViewModel\TpayCards;
 $viewModel = $block->getData('viewModel');
 ?>
 
-<div x-data="{
-open:false,
-cc_number: '',
-cc_number_valid: '',
-cc_type: '',
-cc_exp: '',
-cc_exp_valid: '',
-cc_ccv: '',
-cc_ccv_valid: '',
-message: '',
-save: false,
-rsa: '<?= $viewModel->getPublicKey() ?>',
-recalulate() {
-    var formated = this.cc_number.replace(/\s/g, '');
-    if (formated.length > 1 ) {
-        formated = formated.replace(/^([0-9]{0,4})([0-9]{0,4})([0-9]{0,4})([0-9]{0,4})(\d*)$/, '$1 $2 $3 $4 $5').trim();
-        if (formated != this.cc_number) this.cc_number = formated;
-        var type = this.getType();
-        if (type == 'unknown') {
-            this.message = '<?= $escaper->escapeJs(__('Sorry, your credit card type is currently not supported. Please try another payment method.')) ?>';
-            this.cc_number_valid = 'wrong';
-            return;
-        }
-        if (!this.luhnCheck(this.cc_number.replace(/\s/g, ''))) {
-            this.message = '<?= $escaper->escapeJs(__('Your credit card number seems to be invalid.')) ?>';
-            this.cc_number_valid = 'wrong';
-            return;
-        }
-        this.cc_number_valid = 'valid';
-
-    } else {
-        this.cc_number_valid = '';
-    }
-    this.message = '';
-    var formated = this.cc_exp.replace(/\s/g, '');
-    if (formated.length > 1 ) {
-        if (!formated.match(/^[01]/)) formated = '0' + formated;
-        formated = formated.replace(/^([0-9]{0,2})([0-9]{0,4})$/, '$1 / $2');
-        if (formated != this.cc_exp) this.cc_exp = formated;
-        var data = this.cc_exp.split('/');
-        if (data.length != 2) {
-            this.cc_exp_valid = 'wrong';
-            return;
-        }
-        var month = data[0].trim(), year = data[1].trim();
-        if (!((1 <= month && month <= 12))) {
-            this.cc_exp_valid = 'wrong';
-            return;
-        }
-        if (year.length === 2) {
-            if (year < 70) {
-                year = '20' + year;
-            } else {
-                year = '19' + year;
-            }
-        }
-        if (year.length !== 4) {
-            this.cc_exp_valid = 'wrong';
-            return;
-        }
-        expiry = new Date(year, month);
-        currentTime = new Date;
-        expiry.setMonth(expiry.getMonth() - 1);
-        expiry.setMonth(expiry.getMonth() + 1, 1);
-        if (expiry > currentTime) {
-            this.cc_exp_valid = 'valid';
-        } else {
-            this.cc_exp_valid = 'wrong';
-            return;
-        }
-    } else {
-        this.cc_exp_valid = '';
-    }
-
-    formated = this.cc_ccv.replace(/\s/g, '');
-    if (formated.length > 1) {
-        this.cc_ccv_valid = formated.length == 3 ? 'valid' : 'wrong';
-    } else {
-        this.cc_ccv_valid = '';
-    }
-
-
-     var encrypt = new JSEncrypt(),
-        decoded = atob(this.rsa),
-        cn = this.cc_number.replace(/\s/g, ''),
-        ed = this.cc_exp.replace(/\s/g, ''),
-        cvc = this.cc_ccv.replace(/\s/g, ''),
-        cd = cn + '|' + ed + '|' + cvc + '|' + document.location.origin;
-     if ( cn !== '' && ed !== '' && cvc != '') {
-        encrypt.setPublicKey(decoded);
-        Magewire.find('checkout.payment.method.Tpay_Magento2_Cards.Cards').preserveToken(encrypt.encrypt(cd), this.cc_type, cn.slice(-4), this.save)
-    }
-},
-getType() {
-    var number = this.cc_number.replace(/\s/g, '');
-    if (number.startsWith('4')) {
-        this.cc_type = 'tpay-visa-icon';
-        return 'visa';
-    }
-    for(prefix of ['51', '52', '53', '54', '55', '22', '23', '24', '25', '26', '27']) {
-        if(number.startsWith(prefix)) {
-            this.cc_type = 'tpay-mastercard-icon';
-            return 'mastercard';
-        }
-    }
-    for(prefix of ['50', '57', '56', '58', '6']) {
-        if(number.startsWith(prefix)) {
-            this.cc_type = 'tpay-maestro-icon';
-            return 'maestro';
-        }
-    }
-    this.cc_type = '';
-    return 'unknown';
-},
-luhnCheck(num) {
-    var digit, digits, odd, sum, _i, _len;
-    odd = true;
-    sum = 0;
-    digits = (num + '').split('').reverse();
-    for (_i = 0, _len = digits.length; _i < _len; _i++) {
-        digit = digits[_i];
-        digit = parseInt(digit, 10);
-        if ((odd = !odd)) {
-            digit *= 2;
-        }
-        if (digit > 9) {
-            digit -= 9;
-        }
-        sum += digit;
-    }
-    return sum % 10 === 0;
-}
-}" x-init="open = document.getElementById('newCard').checked" id="card_payment_form" class="tpay-channel-form-wrapper tpay-content-wrapper-class">
-    <div id="card_form" x-show="open" @tpay-card-new.window="open = document.getElementById('newCard').checked">
+<div x-data="tpayHyvaCheckoutComponentPaymentMethodTpayCardForm"
+     data-rsa="<?= $viewModel->getPublicKey() ?>"
+     data-message-unsupported-card="<?= $escaper->escapeHtmlAttr(__('Sorry, your credit card type is currently not supported. Please try another payment method.')) ?>"
+     data-message-invalid-card="<?= $escaper->escapeHtmlAttr(__('Your credit card number seems to be invalid.')) ?>"
+     x-init="tpayHyvaCheckoutCardIsNewCard"
+     id="card_payment_form"
+     class="tpay-channel-form-wrapper tpay-content-wrapper-class">
+    <div id="card_form" x-show="open" @tpay-card-new.window="tpayHyvaCheckoutCardIsNewCard">
         <div id="card_payment" class="tpay-input-wrapper">
             <div class="tpay-col">
                 <div class="tpay-row">
@@ -153,9 +27,9 @@ luhnCheck(num) {
                             <input id="card_number"
                                    pattern="\d*"
                                    autocomplete="cc-number"
-                                   @change="recalulate"
-                                   @keyup="recalulate"
-                                   x-model="cc_number"
+                                   x-on:change="tpayHyvaCheckoutCardChangeCC"
+                                   x-on:keyup="tpayHyvaCheckoutCardChangeCC"
+                                   :value="cc_number"
                                    size="30"
                                    type="tel"
                                    maxlength="23"
@@ -181,9 +55,9 @@ luhnCheck(num) {
                                maxlength="9"
                                type="tel"
                                placeholder="01 / 2020"
-                               @change="recalulate"
-                               @keyup="recalulate"
-                               x-model="cc_exp"
+                               x-on:change="tpayHyvaCheckoutCardChangeExp"
+                               x-on:keyup="tpayHyvaCheckoutCardChangeExp"
+                               :value="cc_exp"
                                autocomplete="cc-exp"
                                tabindex="2"
                                value=""
@@ -202,9 +76,9 @@ luhnCheck(num) {
                         <input id="cvc"
                                maxlength="3"
                                type="tel"
-                               @change="recalulate"
-                               @keyup="recalulate"
-                               x-model="cc_ccv"
+                               x-on:change="tpayHyvaCheckoutCardChangeCvc"
+                               x-on:keyup="tpayHyvaCheckoutCardChangeCvc"
+                               :value="cc_ccv"
                                autocomplete="cc-cvc"
                                placeholder="XXX"
                                tabindex="3"
@@ -219,7 +93,8 @@ luhnCheck(num) {
         <p id="info_msg" x-text="message"></p>
         <?php if ($viewModel->canSaveCC()): ?>
             <div class="tpay-amPmCheckbox" id="tpay-card-save-checkbox">
-                <input type="checkbox" id="card_save" name="card_save" x-model="save" @change="recalulate"/>
+                <input type="checkbox" id="card_save" name="card_save" :value="save"
+                       x-on:change="tpayHyvaCheckoutCardChangeSave"/>
                 <label for="card_save" class="tpay-info-label" title="<?= __(
                     'Allow to pay faster for next orders. Card data will be stored on secure tpay.com server.'
                 ) ?>">
