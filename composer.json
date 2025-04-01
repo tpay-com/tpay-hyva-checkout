@@ -2,18 +2,32 @@
 	"name": "tpay-com/module-hyva-checkout",
 	"description": "Hyvä Checkout compatybility for Magento2 Tpay payment module",
 	"type": "magento2-module",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "tpay.com",
+            "homepage": "https://tpay.com/"
+        }
+    ],
+    "support": {
+        "email": "support@tpay.com",
+        "issues": "https://github.com/tpay-com/tpay-hyva-checkout/issues"
+    },
 	"require": {
 		"hyva-themes/magento2-compat-module-fallback": "*",
-		"hyva-themes/magento2-hyva-checkout": "*",
+		"hyva-themes/magento2-hyva-checkout": "~1.1.13 || ~1.2.0",
 		"php": "^8.1",
 		"tpaycom/magento2basic": "*"
 	},
+    "conflict": {
+        "snowdog/module-hyva-checkout-tpay": "*"
+    },
 	"autoload": {
 		"files": [
 			"src/registration.php"
 		],
 		"psr-4": {
-			"TPay\\Magento\\Hyva\\": "src"
+			"Tpay\\Magento\\Hyva\\": "src"
 		}
 	}
 }

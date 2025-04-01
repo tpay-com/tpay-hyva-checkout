@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Tpay_Magento2::css/tpay.css" />
+        <css src="Tpay_Magento2::css/tpaycards.css" />
+        <script src="Tpay_Magento2::js/jsencrypt.min.js" />
+    </head>
+    <body>
+        <referenceContainer name="hyva.checkout.init-evaluation.after">
+            <block name="hyva.checkout.init-evaluation.validate-tpay-blik-code"
+                   template="Tpay_HyvaCheckout::component/payment/validator/validate-tpay-blik-code.phtml"/>
+            <block name="hyva.checkout.init-evaluation.validate-tpay-method-selection"
+                   template="Tpay_HyvaCheckout::component/payment/validator/validate-tpay-method-selection.phtml"/>
+            <block name="hyva.checkout.init-evaluation.validate-tpay-card-data"
+                   template="Tpay_HyvaCheckout::component/payment/validator/validate-tpay-card-data.phtml"/>
+        </referenceContainer>
+    </body>
+</page>

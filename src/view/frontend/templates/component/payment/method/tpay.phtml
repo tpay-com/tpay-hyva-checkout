@@ -1,0 +1,142 @@
+<?php
+declare(strict_types=1);
+
+/** @var Template $block */
+/** @var Tpay $magewire */
+
+/** @var Escaper $escaper */
+
+use Tpay\Magento\Hyva\Payment\Method\Tpay;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+$issuers = $magewire->getIssuers();
+?>
+<div>
+    <div
+            class="col-span-6"
+            x-data="{
+            showChannelsSection: true,
+            showBlikInput: true,
+            showBlikAlias: <?= $magewire->canUseBlikAlias() ? 'true' : 'false' ?>,
+            channelID: '<?= $magewire->group ?>',
+        }"
+            wire:payment-method="Tpay_Magento2"
+            x-effect="$refs.blikCode.value || $refs.blikAlias.checked
+            ? showChannelsSection = false
+            : showChannelsSection = true;
+            showBlikInput = !$refs.blikAlias.checked;
+        "
+    >
+        <div class="tpay-insidebg">
+            <div class="blik">
+                <div class="tpay-panel-inside-content">
+                    <div class="tpay-channel-form-wrapper tpay-content-wrapper-class">
+                        <img src="https://secure.tpay.com/_/banks/b64.png"/>
+                        <div x-show="showBlikInput">
+                            <p>
+                                <?= $escaper->escapeHtml(
+                                    __('Type in 6 digit code and press pay to commit blik payment.')
+                                ) ?>
+                            </p>
+                            <div class="tpay-input-blik-code">
+                                <div class="tpay-input-wrapper">
+                                    <div class="tpay-input-label">
+                                        <?= $escaper->escapeHtml(__('BLIK code')) ?>
+                                    </div>
+                                    <input
+                                            x-ref="blikCode"
+                                            id="blik_code"
+                                            name="blik_code"
+                                            pattern="\d*"
+                                            type="tel"
+                                            autocomplete="off"
+                                            maxlength="6"
+                                            minlength="6"
+                                            placeholder="000000"
+                                            tabindex="1"
+                                            value=""
+                                            class="tpay-input-value tpay-blik-input"
+                                            wire:model.lazy="blikCode"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div x-show="showBlikAlias">
+                            <div>
+                                <input type="checkbox" x-ref="blikAlias" id="blik_alias" name="blik_alias" wire:model="blikAlias" />
+                                <?= $escaper->escapeHtml(__('I pay with BLIK from saved account')) ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                    id="tpay-basic-main-payment"
+                    x-show="showChannelsSection"
+                    x-cloak
+            >
+                <p class="pl-3 pt-2">
+                    <?= $escaper->escapeHtml(__('Choose a payment method')) ?>
+                </p>
+                <div
+                        id="groups_v"
+                        class="tpay-panel-inside-content"
+                >
+                    <div
+                            id="bank-selection-form"
+                            class="tpay-groups-wrapper"
+                    >
+                        <?php foreach ($magewire->getGroups() as $group): ?>
+                            <button
+                                    class="tpay-group-holder tpay-with-logo"
+                                    :class="channelID === '<?= $group['id'] ?>' ? 'tpay-active' : ''"
+                                    id="bank-<?= $group['id'] ?>"
+                                    wire:click="selectGroup(<?= $group['id'] ?>)"
+                                    @click="channelID = '<?= $group['id'] ?>'"
+                            >
+                                <div class="tpay-group-name">
+                                    <?= $group['name'] ?>
+                                </div>
+                                <div class="tpay-group-logo-holder">
+                                    <img
+                                            src="<?= $group['img'] ?>"
+                                            class="tpay-group-logo mx-auto"
+                                            alt="<?= $group['name'] ?>"
+                                    >
+                                </div>
+                            </button>
+                        <?php endforeach ?>
+                    </div>
+                </div>
+            </div>
+            <input
+                    type="hidden"
+                    id="tpay-channel-input"
+                    name="tpay-channel-input"
+            />
+        </div>
+        <div class="checkout-agreements-block">
+            <div class="TpayRegulations tpay-regulations-offset">
+                <input
+                        class="cursor-pointer"
+                        type="checkbox"
+                        checked
+                        name="accept_tos"
+                        id="accept_tos"
+                />
+                <label for="accept_tos">
+                    <span><?= $escaper->escapeHtml(__('By paying, you accept ')) ?></span>
+                    <a target="_blank" href="<?= $escaper->escapeUrl($magewire->getTerms()) ?>"><?= $escaper->escapeHtml(__('regulations')) ?></a>.<br>
+                    <span>
+                        <?= $escaper->escapeHtml(__(
+                            'The personal data administrator is Krajowy Integrator Płatności S.A with its registered office in Poznań. '
+                                                 ))
+                        ?>
+                    </span><br>
+                    <a target="_blank" href="<?= $escaper->escapeUrl($magewire->getRegulations()) ?>"><?= $escaper->escapeHtml(__('Show full content')) ?></a>.
+                </label>
+            </div>
+        </div>
+    </div>
+</div>

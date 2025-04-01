@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Hyva\Checkout\Model\Magewire\Payment\PlaceOrderServiceProvider">
+        <arguments>
+            <argument name="placeOrderServiceList" xsi:type="array">
+                <item name="Tpay_Magento2" xsi:type="object">
+                    Tpay\Magento\Hyva\Magewire\Payment\PlaceOrderServiceProvider
+                </item>
+                <item name="Tpay_Magento2_Cards" xsi:type="object">
+                    Tpay\Magento\Hyva\Magewire\Payment\PlaceOrderServiceProvider
+                </item>
+                <item name="generic" xsi:type="object">
+                    Tpay\Magento\Hyva\Magewire\Payment\PlaceOrderServiceProvider
+                </item>
+            </argument>
+        </arguments>
+        <plugin name="tpay-payment-generic-names"
+                type="Tpay\Magento\Hyva\Plugin\GenericPaymentName" />
+    </type>
+    <type name="Hyva\CompatModuleFallback\Model\CompatModuleRegistry">
+        <arguments>
+            <argument name="compatModules" xsi:type="array">
+                <item name="tpay-hyva-checkout" xsi:type="array">
+                    <item name="original_module" xsi:type="string">Tpay_Magento2</item>
+                    <item name="compat_module" xsi:type="string">Tpay_HyvaCheckout</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+</config>

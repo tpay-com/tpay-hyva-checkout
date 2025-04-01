@@ -1,0 +1,12 @@
+<script>
+    window.addEventListener('checkout:init:evaluation', event => {
+        hyvaCheckout.evaluation.registerValidator('validateTpayCardData', (element, component) => {
+            let token = component.get('token');
+            let saved = component.get('saved');
+            if (!token && saved == 'new_card') {
+                return false;
+            }
+            return true;
+        })
+    })
+</script>

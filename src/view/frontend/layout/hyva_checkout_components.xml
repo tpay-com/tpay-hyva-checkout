@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+>
+    <body>
+        <referenceBlock name="checkout.payment.methods">
+            <block name="checkout.payment.method.Tpay_Magento2"
+                   as="Tpay_Magento2"
+                   template="Tpay_HyvaCheckout::component/payment/method/tpay.phtml">
+                <arguments>
+                    <argument name="magewire" xsi:type="object">
+                        Tpay\Magento\Hyva\Payment\Method\Tpay
+                    </argument>
+                </arguments>
+            </block>
+            <block name="checkout.payment.method.Tpay_Magento2_Cards"
+                   as="Tpay_Magento2_Cards"
+                   template="Tpay_HyvaCheckout::component/payment/method/tpay_card_wrapper.phtml">
+                <block name="checkout.payment.method.Tpay_Magento2_Cards.Cards"
+                       as="cards"
+                       template="Tpay_HyvaCheckout::component/payment/method/tpay_card.phtml">
+                    <arguments>
+                        <argument name="magewire" xsi:type="object">
+                            Tpay\Magento\Hyva\Payment\Method\TpayCard
+                        </argument>
+                    </arguments>
+                </block>
+                <block name="checkout.payment.method.Tpay_Magento2_Cards.Form"
+                       as="form"
+                       template="Tpay_HyvaCheckout::component/payment/method/tpay_card_form.phtml">
+                    <arguments>
+                        <argument name="viewModel" xsi:type="object">
+                            Tpay\Magento\Hyva\ViewModel\TpayCards
+                        </argument>
+                    </arguments>
+                </block>
+            </block>
+            <block name="checkout.payment.method.generic"
+                   as="generic"
+                   template="Tpay_HyvaCheckout::component/payment/method/tpay_generic.phtml">
+                <arguments>
+                    <argument name="magewire" xsi:type="object">
+                        Tpay\Magento\Hyva\Payment\Method\TpayGeneric
+                    </argument>
+                </arguments>
+            </block>
+        </referenceBlock>
+    </body>
+</page>

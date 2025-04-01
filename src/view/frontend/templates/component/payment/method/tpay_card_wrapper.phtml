@@ -1,0 +1,12 @@
+<?php
+declare(strict_types=1);
+
+/** @var Template $block */
+
+use Magento\Framework\View\Element\Template;
+
+?>
+<div>
+    <?= $block->getChildHtml('cards') ?>
+    <?= $block->getChildHtml('form') ?>
+</div>
