@@ -47,7 +47,7 @@ class TpayCard extends Component implements EvaluationInterface
         $quote->getPayment()->setAdditionalInformation('card_id', $this->saved == "new_card" ? null : $this->saved);
         if ($this->save && $this->saved == "new_card") {
             $quote->getPayment()->setAdditionalInformation('card_save', true);
-            $quote->getPayment()->setAdditionalInformation('short_code', '****' . $this->suffix);
+            $quote->getPayment()->setAdditionalInformation('short_code', $this->suffix);
             $type = explode('-', $this->type);
             $quote->getPayment()->setAdditionalInformation('card_vendor', $type[1]);
         } else {

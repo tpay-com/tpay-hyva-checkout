@@ -8,12 +8,6 @@
             <block name="component.payment.method.tpay"
                    template="Tpay_HyvaCheckout::component/payment/method/tpay-csp-js.phtml"
             />
-            <block name="component.payment.method.tpay_card"
-                   template="Tpay_HyvaCheckout::component/payment/method/tpay_card-csp-js.phtml"
-            />
-            <block name="component.payment.method.tpay_card_form"
-                   template="Tpay_HyvaCheckout::component/payment/method/tpay_card_form-csp-js.phtml"
-            />
         </referenceContainer>
     </body>
 </page>
