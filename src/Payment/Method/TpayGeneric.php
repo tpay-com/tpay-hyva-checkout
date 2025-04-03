@@ -13,11 +13,10 @@ use Tpay\Magento2\Provider\ConfigurationProvider;
 class TpayGeneric extends Component implements EvaluationInterface
 {
     public function __construct(
-        private readonly SessionCheckout         $sessionCheckout,
+        private readonly SessionCheckout $sessionCheckout,
         private readonly CartRepositoryInterface $quoteRepository,
-        private readonly ConfigurationProvider   $tPayConfigProvider,
-    ) {
-    }
+        private readonly ConfigurationProvider $tPayConfigProvider,
+    ) {}
 
     public function mount(): void
     {

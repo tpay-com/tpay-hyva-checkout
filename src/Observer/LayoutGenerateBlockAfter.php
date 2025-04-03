@@ -9,9 +9,9 @@ use Magento\Framework\View\Layout;
 
 class LayoutGenerateBlockAfter implements ObserverInterface
 {
-    public function __construct(private readonly ScopeConfigInterface $scopeConfig)
-    {
-    }
+    public function __construct(
+        private readonly ScopeConfigInterface $scopeConfig
+    ) {}
 
     public function execute(Observer $observer)
     {
@@ -30,10 +30,10 @@ class LayoutGenerateBlockAfter implements ObserverInterface
             if (empty($genericMethods)) {
                 return;
             }
-            $genericMethods = explode(",", $genericMethods);
+            $genericMethods = explode(',', $genericMethods);
             foreach ($genericMethods as $method) {
-                if (!$parentBlock->getChildBlock('generic-' . $method)) {
-                    $parentBlock->addChild('generic-' . $method, get_class($block), $data);
+                if (!$parentBlock->getChildBlock('generic-'.$method)) {
+                    $parentBlock->addChild('generic-'.$method, get_class($block), $data);
                 }
             }
         }

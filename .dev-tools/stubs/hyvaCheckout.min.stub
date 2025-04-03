@@ -1,0 +1,239 @@
+<?php
+namespace Hyva\Checkout\Model\Magewire\Payment;
+/**
+ * @deprecated use the AbstractPlaceOrderService instead.
+ * @see \Hyva\Checkout\Model\Magewire\Payment\AbstractPlaceOrderService
+ */
+interface PlaceOrderServiceInterface
+{
+    public function placeOrder(\Magento\Quote\Model\Quote $quote) : int;
+    public function canPlaceOrder() : bool;
+    public function handleException(\Exception $exception, \Magewirephp\Magewire\Component $component, \Magento\Quote\Model\Quote $quote) : void;
+    public function canRedirect() : bool;
+    public function getRedirectUrl(\Magento\Quote\Model\Quote $quote, ?int $orderId = null) : string;
+}
+abstract class AbstractPlaceOrderService implements \Hyva\Checkout\Model\Magewire\Payment\PlaceOrderServiceInterface, \Hyva\Checkout\Model\Magewire\Component\EvaluationInterface
+{
+    public const REDIRECT_PATH = 'checkout/onepage/success';
+    protected \Magento\Quote\Api\CartManagementInterface $cartManagement;
+    protected \Hyva\Checkout\Model\Magewire\Payment\AbstractOrderData $orderData;
+    public function __construct(\Magento\Quote\Api\CartManagementInterface $cartManagement, \Hyva\Checkout\Model\Magewire\Payment\AbstractOrderData $orderData = null)
+    {
+    }
+    /**
+     * @throws CouldNotSaveException
+     */
+    public function placeOrder(\Magento\Quote\Model\Quote $quote) : int
+    {
+    }
+    public function canPlaceOrder() : bool
+    {
+    }
+    /**
+     * @throws Exception
+     */
+    public function handleException(\Exception $exception, \Magewirephp\Magewire\Component $component, \Magento\Quote\Model\Quote $quote) : void
+    {
+    }
+    public function canRedirect() : bool
+    {
+    }
+    public function getRedirectUrl(\Magento\Quote\Model\Quote $quote, ?int $orderId = null) : string
+    {
+    }
+    public function evaluateCompletion(\Hyva\Checkout\Model\Magewire\Component\EvaluationResultFactory $resultFactory, ?int $orderId = null) : \Hyva\Checkout\Model\Magewire\Component\EvaluationResultInterface
+    {
+    }
+    public function getData()
+    {
+    }
+}
+class PlaceOrderServiceProvider
+{
+    protected \Hyva\Checkout\Model\Magewire\Payment\PlaceOrderServiceInterface $defaultPlaceOrderService;
+    protected \Psr\Log\LoggerInterface $logger;
+    protected array $placeOrderServiceList;
+    public function __construct(\Hyva\Checkout\Model\Magewire\Payment\PlaceOrderServiceInterface $defaultPlaceOrderService, \Psr\Log\LoggerInterface $logger, array $placeOrderServiceList = [])
+    {
+    }
+    /**
+     * Returns a Place Order service by PaymentInterface when available.
+     *
+     * @return AbstractPlaceOrderService
+     */
+    public function getByPayment(\Magento\Quote\Api\Data\PaymentInterface $payment) : ?\Hyva\Checkout\Model\Magewire\Payment\PlaceOrderServiceInterface
+    {
+    }
+    /**
+     * Returns a Place Order service by payment method code when available.
+     *
+     * @return AbstractPlaceOrderService
+     */
+    public function getByCode(string $code) : \Hyva\Checkout\Model\Magewire\Payment\PlaceOrderServiceInterface
+    {
+    }
+    /**
+     * @return AbstractPlaceOrderService
+     */
+    public function getDefaultPlaceOrderService() : \Hyva\Checkout\Model\Magewire\Payment\PlaceOrderServiceInterface
+    {
+    }
+    /**
+     * Get a list of all injected place order services.
+     *
+     * @return AbstractPlaceOrderService[]
+     */
+    public function getList() : array
+    {
+    }
+}
+namespace Hyva\Checkout\Model\Magewire\Component;
+
+class EvaluationResultFactory
+{
+    protected \Magento\Framework\ObjectManagerInterface $objectManager;
+    public function __construct(\Magento\Framework\ObjectManagerInterface $objectManager)
+    {
+    }
+    /**
+     * Clear non-successful states.
+     *
+     * @param array $details @deprecated object methods should be used.
+     * @param string|null $event @deprecated object methods should be used.
+     */
+    public function createSuccess(array $details = [], string $event = null) : \Hyva\Checkout\Model\Magewire\Component\Evaluation\Success
+    {
+    }
+    /**
+     * Prohibit user from proceeding and display the given flash message.
+     *
+     * @param string|null $text
+     * @param string $messageType @deprecated backward compatibility - object methods should be used.
+     * @param int|null $duration @deprecated backward compatibility - object methods should be used.
+     * @param bool $blocking @deprecated backward compatibility - object methods should be used.
+     */
+    public function createErrorMessage(string $text = null, string $messageType = 'error', int $duration = null, bool $blocking = false) : \Hyva\Checkout\Model\Magewire\Component\Evaluation\ErrorMessage
+    {
+    }
+    /**
+     * Prohibit user from proceeding, display the given flash message and dispatch the given JavaScript event.
+     *
+     * @param string|null $text
+     * @param string|null $event @deprecated backward compatibility- object methods should be used.
+     * @param string $messageType @deprecated backward compatibility - object methods should be used.
+     * @param bool $blocking @deprecated backward compatibility - object methods should be used.
+     */
+    public function createErrorMessageEvent(string $text = null, string $event = null, string $messageType = 'error', bool $blocking = false) : \Hyva\Checkout\Model\Magewire\Component\Evaluation\ErrorEventMessage
+    {
+    }
+    /**
+     * Prohibit user from proceeding and dispatch the given JavaScript error event.
+     *
+     * @param array $details @deprecated backward compatibility - object methods should be used.
+     * @param string|null $event @deprecated backward compatibility - object methods should be used.
+     * @param bool $blocking @deprecated backward compatibility - object methods should be used.
+     */
+    public function createErrorEvent(array $details = [], string $event = null, bool $blocking = false) : \Hyva\Checkout\Model\Magewire\Component\Evaluation\ErrorEvent
+    {
+    }
+    /**
+     * Prohibit user from proceeding and dispatch the given JavaScript event.
+     */
+    public function createEvent(string $event) : \Hyva\Checkout\Model\Magewire\Component\Evaluation\Event
+    {
+    }
+    /**
+     * Prohibit users from progressing with navigation tasks, such as advancing forward or placing an order.
+     *
+     * @deprecated This blocking evaluation result is deprecated as it silently obstructs primary navigation buttons.
+     *              These buttons are essential for triggering navigational and validation tasks, which provide
+     *              user-friendly notifications to guide customers on the next steps, such as proceeding or placing an order.
+     */
+    public function createBlocking(string $cause = null) : \Hyva\Checkout\Model\Magewire\Component\Evaluation\Blocking
+    {
+    }
+    /**
+     * Execute a redirect.
+     */
+    public function createRedirect(string $url) : \Hyva\Checkout\Model\Magewire\Component\Evaluation\Redirect
+    {
+    }
+    /**
+     * Include an additional navigation task.
+     */
+    public function createNavigationTask(string $name, \Hyva\Checkout\Model\Magewire\Component\Evaluation\EvaluationResult $task) : \Hyva\Checkout\Model\Magewire\Component\Evaluation\NavigationTask
+    {
+    }
+    /**
+     * Wrap multiple evaluation result types into a batch.
+     *
+     * @param EvaluationResult[] $evaluationResults
+     */
+    public function createBatch(array $evaluationResults = []) : \Hyva\Checkout\Model\Magewire\Component\Evaluation\Batch
+    {
+    }
+    /**
+     * Register an evaluation validator.
+     */
+    public function createValidation(string $name) : \Hyva\Checkout\Model\Magewire\Component\Evaluation\Validation
+    {
+    }
+    /**
+     * Register an evaluation executable.
+     */
+    public function createExecutable(string $name) : \Hyva\Checkout\Model\Magewire\Component\Evaluation\Executable
+    {
+    }
+    /**
+     * Register an evaluation message dialog.
+     */
+    public function createMessageDialog(string $title) : \Hyva\Checkout\Model\Magewire\Component\Evaluation\MessageDialog
+    {
+    }
+    /**
+     * Registers a custom evaluation result to be recognized by the frontend evaluation result processor.
+     */
+    public function createCustom(string $type) : \Hyva\Checkout\Model\Magewire\Component\Evaluation\Custom
+    {
+    }
+    public function create(string $type, array $args = []) : \Hyva\Checkout\Model\Magewire\Component\Evaluation\EvaluationResult
+    {
+    }
+}
+namespace Hyva\Checkout\Model\Magewire\Component;
+
+/**
+ * @deprecated has been replaced with EvaluationResult to prevent backward incompatible changes.
+ * @see \Hyva\Checkout\Model\Magewire\Component\Evaluation\EvaluationResult
+ */
+interface EvaluationResultInterface
+{
+    /**
+     * All data to be used inside the evaluation processor.
+     */
+    public function getArguments(\Magewirephp\Magewire\Component $component) : array;
+    /**
+     * Returns if the evaluation was a success yes/no.
+     */
+    public function getResult() : bool;
+    /**
+     * Returns the type (processor) name of the result. (format example: 'foo_bar')
+     */
+    public function getType() : string;
+    /**
+     * Returns if an evaluation results needs to be marked as blocking.
+     *
+     * @deprecated use the blocking capabilities trait instead.
+     * @see BlockingCapabilities
+     */
+    public function isBlocking() : bool;
+}
+namespace Hyva\Checkout\Model\Magewire\Component;
+
+/**
+ * @api
+ */
+interface EvaluationInterface
+{
+    public function evaluateCompletion(\Hyva\Checkout\Model\Magewire\Component\EvaluationResultFactory $resultFactory) : \Hyva\Checkout\Model\Magewire\Component\EvaluationResultInterface;
+}

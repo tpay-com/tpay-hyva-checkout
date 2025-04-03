@@ -9,10 +9,9 @@ use Tpay\Magento2\Provider\ConfigurationProvider;
 class TpayCards implements ArgumentInterface
 {
     public function __construct(
-        private readonly SessionCheckout       $sessionCheckout,
+        private readonly SessionCheckout $sessionCheckout,
         private readonly ConfigurationProvider $tPayConfigProvider,
-    ) {
-    }
+    ) {}
 
     public function canSaveCC(): bool
     {
