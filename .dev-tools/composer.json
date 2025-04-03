@@ -5,7 +5,7 @@
         "magento/magento2ce": "^2.4",
         "php-cs-fixer/shim": "3.23",
         "phpstan/phpstan": "1.10.30",
-        "squizlabs/php_codesniffer": "*",
+        "squizlabs/php_codesniffer": "^3.12.0",
         "tpay-com/coding-standards": "^1.0.1",
         "tpay-com/tpay-openapi-php": "^1.3",
         "tpay-com/tpay-php": "^2.3.4",
