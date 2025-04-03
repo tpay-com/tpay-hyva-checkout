@@ -1,0 +1,36 @@
+name: Static code analysis
+
+on:
+  push:
+
+jobs:
+  analyse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          extensions: none, bcmath, curl, dom, fileinfo, gd, iconv, intl, mbstring, pdo_mysql, simplexml, soap, sockets, tokenizer, xsl, xmlwriter, zip
+          coverage: none
+
+      - run: composer validate --strict
+
+      - working-directory: .dev-tools
+        run: composer install
+
+      - working-directory: .dev-tools
+        run: composer normalize --diff --dry-run --indent-size=4 --indent-style=space ../composer.json
+
+      - working-directory: .dev-tools
+        run: composer cs:fixer -- --dry-run
+
+      - working-directory: .dev-tools
+        run: composer cs:sniffer
+
+      - working-directory: .dev-tools
+        run: composer cs:phpstan
+
+      - working-directory: .dev-tools
+        run: composer cs:psalm -- --no-progress --shepherd

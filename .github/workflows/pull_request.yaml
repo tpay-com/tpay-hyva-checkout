@@ -1,0 +1,26 @@
+name: Pull request
+
+on:
+  pull_request:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/upload-artifact@v4
+        id: plugin-upload
+        with:
+          name: 'tpay-hyva-checkout'
+          path: './'
+
+      - uses: mshick/add-pr-comment@v2
+        with:
+          message: |
+            Tpay Hyva Checkout Magento2 plugin - ${{ steps.plugin-upload.outputs.artifact-url }}

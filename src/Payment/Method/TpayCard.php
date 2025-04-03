@@ -2,6 +2,7 @@
 
 namespace Tpay\Magento\Hyva\Payment\Method;
 
+use Exception;
 use Hyva\Checkout\Model\Magewire\Component\EvaluationInterface;
 use Hyva\Checkout\Model\Magewire\Component\EvaluationResultFactory;
 use Hyva\Checkout\Model\Magewire\Component\EvaluationResultInterface;
@@ -10,27 +11,21 @@ use Magento\Quote\Api\CartRepositoryInterface;
 use Magewirephp\Magewire\Component;
 use Tpay\Magento2\Model\ApiFacade\TpayConfig\CardConfigFacade;
 use Tpay\Magento2\Provider\ConfigurationProvider;
-use Tpay\Magento2\Service\TpayTokensService;
 
 class TpayCard extends Component implements EvaluationInterface
 {
-    public string|int $saved = "";
-
-    public string $token = "";
-
-    public string $suffix = "";
-
-    public string $type = "";
-
+    public int|string $saved = '';
+    public string $token = '';
+    public string $suffix = '';
+    public string $type = '';
     public bool $save = false;
 
     public function __construct(
-        private readonly SessionCheckout         $sessionCheckout,
+        private readonly SessionCheckout $sessionCheckout,
         private readonly CartRepositoryInterface $quoteRepository,
-        private readonly ConfigurationProvider   $tPayConfigProvider,
+        private readonly ConfigurationProvider $tPayConfigProvider,
         private readonly CardConfigFacade $cardConfigFacade,
-    ) {
-    }
+    ) {}
 
     public function mount(): void
     {
@@ -43,9 +38,9 @@ class TpayCard extends Component implements EvaluationInterface
     {
         $quote = $this->sessionCheckout->getQuote();
         $quote->getPayment()->setAdditionalInformation('accept_tos', true);
-        $quote->getPayment()->setAdditionalInformation('card_data', $this->saved == "new_card" ? $this->token : null);
-        $quote->getPayment()->setAdditionalInformation('card_id', $this->saved == "new_card" ? null : $this->saved);
-        if ($this->save && $this->saved == "new_card") {
+        $quote->getPayment()->setAdditionalInformation('card_data', 'new_card' == $this->saved ? $this->token : null);
+        $quote->getPayment()->setAdditionalInformation('card_id', 'new_card' == $this->saved ? null : $this->saved);
+        if ($this->save && 'new_card' == $this->saved) {
             $quote->getPayment()->setAdditionalInformation('card_save', true);
             $quote->getPayment()->setAdditionalInformation('short_code', $this->suffix);
             $type = explode('-', $this->type);
@@ -87,21 +82,23 @@ class TpayCard extends Component implements EvaluationInterface
     {
         try {
             $config = $this->cardConfigFacade->getConfig();
+
             return $config['tpaycards']['payment']['customerTokens'] ?? [];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return [];
         }
     }
 
     public function evaluateCompletion(EvaluationResultFactory $resultFactory): EvaluationResultInterface
     {
-        if ($this->sessionCheckout->getQuote()->getPayment()->getMethod() != 'Tpay_Magento2_Cards') {
+        if ('Tpay_Magento2_Cards' != $this->sessionCheckout->getQuote()->getPayment()->getMethod()) {
             return $resultFactory->createSuccess();
         }
 
-        if (empty($this->token) && $this->saved == 'new_card') {
+        if (empty($this->token) && 'new_card' == $this->saved) {
             $errorMessageEvent = $resultFactory->createErrorMessageEvent(__('No card data'))
                 ->withCustomEvent('payment:method:error');
+
             return $resultFactory->createValidation('validateTpayCardData')->withFailureResult($errorMessageEvent);
         }
 
