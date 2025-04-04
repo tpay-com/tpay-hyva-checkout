@@ -25,6 +25,7 @@ class TpayCard extends Component implements EvaluationInterface
         private readonly CartRepositoryInterface $quoteRepository,
         private readonly ConfigurationProvider $tPayConfigProvider,
         private readonly CardConfigFacade $cardConfigFacade,
+        // phpcs:ignore
     ) {}
 
     public function mount(): void

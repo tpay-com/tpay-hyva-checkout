@@ -28,6 +28,7 @@ class Tpay extends Component implements EvaluationInterface
         private readonly ConfigurationProvider $tPayConfigProvider,
         private readonly ConfigFacade $configFacade,
         private readonly AliasRepository $aliasRepository,
+        // phpcs:ignore
     ) {}
 
     public function mount(): void

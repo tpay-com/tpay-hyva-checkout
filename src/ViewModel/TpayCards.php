@@ -11,6 +11,7 @@ class TpayCards implements ArgumentInterface
     public function __construct(
         private readonly SessionCheckout $sessionCheckout,
         private readonly ConfigurationProvider $tPayConfigProvider,
+        // phpcs:ignore
     ) {}
 
     public function canSaveCC(): bool
