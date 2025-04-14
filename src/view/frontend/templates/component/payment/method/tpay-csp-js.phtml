@@ -20,8 +20,9 @@ use Magento\Framework\View\Element\Template;
         return Object.assign(
             {
                 showChannelsSection: true,
-                showBlikInput: true,
+                showBlikInput: !this.$refs.blikAlias.checked,
                 showBlikAlias: (this.$el.dataset.canUseAlias === 'true'),
+                showBlikSection: (this.$el.dataset.enableBlik === 'true'),
                 channelID: `${this.$el.dataset.preselectedGroup}`,
             }
             , {

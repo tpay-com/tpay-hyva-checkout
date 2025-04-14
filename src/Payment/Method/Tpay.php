@@ -16,11 +16,10 @@ use Tpay\Magento2\Provider\ConfigurationProvider;
 
 class Tpay extends Component implements EvaluationInterface
 {
-    private const CACHE_KEY = 'hyva_tpay_channels';
-
     public int $group = 0;
     public string $blikCode = '';
     public bool $blikAlias = false;
+    private array $config = [];
 
     public function __construct(
         private readonly SessionCheckout $sessionCheckout,
@@ -28,8 +27,12 @@ class Tpay extends Component implements EvaluationInterface
         private readonly ConfigurationProvider $tPayConfigProvider,
         private readonly ConfigFacade $configFacade,
         private readonly AliasRepository $aliasRepository,
-        // phpcs:ignore
-    ) {}
+    ) {
+        try {
+            $this->config = $this->configFacade->getConfig();
+        } catch (Exception $e) {
+        }
+    }
 
     public function mount(): void
     {
@@ -67,15 +70,14 @@ class Tpay extends Component implements EvaluationInterface
         $this->updated('group', $group);
     }
 
+    public function getUseBlik()
+    {
+        return $this->config['tpay']['payment']['blikStatus'] ?? false;
+    }
+
     public function getGroups()
     {
-        try {
-            $config = $this->configFacade->getConfig();
-
-            return $config['tpay']['payment']['groups'] ?? [];
-        } catch (Exception $e) {
-            return [];
-        }
+        return $this->config['tpay']['payment']['groups'] ?? [];
     }
 
     public function evaluateCompletion(EvaluationResultFactory $resultFactory): EvaluationResultInterface
