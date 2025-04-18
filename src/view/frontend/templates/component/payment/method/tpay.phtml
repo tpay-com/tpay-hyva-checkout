@@ -15,21 +15,12 @@ $issuers = $magewire->getIssuers();
 <div>
     <div
             class="col-span-6"
-            x-data="{
-            showChannelsSection: true,
-            showBlikInput: true,
-            showBlikAlias: <?= $magewire->canUseBlikAlias() ? 'true' : 'false' ?>,
-            channelID: '<?= $magewire->group ?>',
-        }"
+            x-data="tpayHyvaCheckoutComponentPaymentMethodTpay" data-can-use-alias="<?= $magewire->canUseBlikAlias() ? 'true' : 'false' ?>" data-enable-blik="<?= $magewire->getUseBlik() ? 'true' : 'false' ?>" data-preselected-group="<?= $magewire->group ?>"
             wire:payment-method="Tpay_Magento2"
-            x-effect="$refs.blikCode.value || $refs.blikAlias.checked
-            ? showChannelsSection = false
-            : showChannelsSection = true;
-            showBlikInput = !$refs.blikAlias.checked;
-        "
+            x-effect="tpayHyvaHideOptions"
     >
         <div class="tpay-insidebg">
-            <div class="blik">
+            <div class="blik" x-show="showBlikSection">
                 <div class="tpay-panel-inside-content">
                     <div class="tpay-channel-form-wrapper tpay-content-wrapper-class">
                         <img src="https://secure.tpay.com/_/banks/b64.png"/>
@@ -57,6 +48,7 @@ $issuers = $magewire->getIssuers();
                                             tabindex="1"
                                             value=""
                                             class="tpay-input-value tpay-blik-input"
+                                            @change="tpayHyvaHideOptions"
                                             wire:model.lazy="blikCode"
                                     />
                                 </div>
@@ -64,7 +56,7 @@ $issuers = $magewire->getIssuers();
                         </div>
                         <div x-show="showBlikAlias">
                             <div>
-                                <input type="checkbox" x-ref="blikAlias" id="blik_alias" name="blik_alias" wire:model="blikAlias" />
+                                <input type="checkbox" x-ref="blikAlias" id="blik_alias" name="blik_alias" wire:model="blikAlias" @change="tpayHyvaHideOptions"/>
                                 <?= $escaper->escapeHtml(__('I pay with BLIK from saved account')) ?>
                             </div>
                         </div>
@@ -90,10 +82,9 @@ $issuers = $magewire->getIssuers();
                         <?php foreach ($magewire->getGroups() as $group): ?>
                             <button
                                     class="tpay-group-holder tpay-with-logo"
-                                    :class="channelID === '<?= $group['id'] ?>' ? 'tpay-active' : ''"
+                                    :class="tpayHyvaIsGroupActive" data-group-id="<?= $group['id'] ?>"
                                     id="bank-<?= $group['id'] ?>"
-                                    wire:click="selectGroup(<?= $group['id'] ?>)"
-                                    @click="channelID = '<?= $group['id'] ?>'"
+                                    @click="tpayHyvaSelectGroup"
                             >
                                 <div class="tpay-group-name">
                                     <?= $group['name'] ?>

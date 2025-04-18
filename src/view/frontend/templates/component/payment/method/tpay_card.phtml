@@ -13,12 +13,12 @@ use Magento\Framework\View\Element\Template;
 ?>
 <div wire:payment-method="Tpay_Magento2">
     <div class="card_insidebg">
-        <div  class="card_tpay-panel-inside-content">
+        <div  class="card_tpay-panel-inside-content"  x-data="tpayHyvaCheckoutComponentPaymentMethodTpayCard">
             <div id="saved_card_payment" style="visibility: visible" class="tpay-cards-choice">
                 <?php if ($magewire->canSaveCC()): ?>
                     <?php foreach ($magewire->getTokens() as $token): ?>
                         <label for="cardN<?= $token['id'] ?>" name="-<?= $token['vendor'] ?>"  class="mb-0 p-0 cursor-pointer">
-                            <input wire:model="saved" type="radio" name="savedId" id="cardN<?= $token['id'] ?>" onchange="window.dispatchEvent(new CustomEvent('tpay-card-new'))"
+                            <input wire:model="saved" type="radio" name="savedId" id="cardN<?= $token['id'] ?>" x-on:change="checkNewCard"
                                    value="<?= $token['id'] ?>" <?php if ($magewire->saved == $token['id']): ?> checked <?php endif ?>/>
                             <span class="h-full text-sm">
                                 <?= __('Pay with saved card ') ?>
@@ -30,7 +30,7 @@ use Magento\Framework\View\Element\Template;
                 <?php endif ?>
 
                 <label for="newCard" class="mb-0 p-0 cursor-pointer">
-                    <input x-data wire:model="saved" type="radio" name="savedId" id="newCard" onchange="window.dispatchEvent(new CustomEvent('tpay-card-new'))"
+                    <input  wire:model="saved" type="radio" name="savedId" id="newCard" x-on:change="checkNewCard"
                            value="new_card" <?php if ($magewire->saved == "new_card"): ?> checked <?php endif ?> />
                     <span class="h-full text-sm">
                         <?= __('Pay with a new card') ?>

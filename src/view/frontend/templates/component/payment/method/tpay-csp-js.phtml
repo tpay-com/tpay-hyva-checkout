@@ -1,0 +1,229 @@
+<?php
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\HyvaCsp;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+/** @var HyvaCsp $hyvaCsp */
+
+?>
+<script>
+    function tpayHyvaCheckoutComponentPaymentMethodTpay() {
+        const $wire = this.$wire;
+
+        return Object.assign(
+            {
+                showChannelsSection: true,
+                showBlikInput: !this.$refs.blikAlias.checked,
+                showBlikAlias: (this.$el.dataset.canUseAlias === 'true'),
+                showBlikSection: (this.$el.dataset.enableBlik === 'true'),
+                channelID: `${this.$el.dataset.preselectedGroup}`,
+            }
+            , {
+                ['tpayHyvaIsGroupActive']() {
+                    return this.channelID === `${this.$el.dataset.groupId}` ? 'tpay-active' : ''
+                },
+                ['tpayHyvaSelectGroup'](event) {
+                    this.channelID = event.target.offsetParent.dataset.groupId;
+                    $wire.selectGroup(parseInt(this.channelID));
+                    return this.channelID;
+                },
+                ['tpayHyvaHideOptions']() {
+                    this.$refs.blikCode.value || this.$refs.blikAlias.checked
+                        ? this.showChannelsSection = false
+                        : this.showChannelsSection = true;
+                    this.showBlikInput = !this.$refs.blikAlias.checked;
+                },
+            }
+        )
+    }
+
+    function tpayHyvaCheckoutComponentPaymentMethodTpayCard() {
+        return Object.assign(
+            {
+                checkNewCard() {
+                    window.dispatchEvent(new CustomEvent('tpay-card-new'))
+                }
+            }
+        )
+    }
+
+    function tpayHyvaCheckoutComponentPaymentMethodTpayCardForm() {
+        return Object.assign(
+            {
+                open: false,
+                cc_number: '',
+                cc_number_valid: '',
+                cc_type: '',
+                cc_exp: '',
+                cc_exp_valid: '',
+                cc_ccv: '',
+                cc_ccv_valid: '',
+                message: '',
+                save: false,
+                rsa: `${this.$el.dataset.rsa}`,
+                recalulate() {
+                    var formated = this.cc_number.replace(/\s/g, '');
+                    if (formated.length > 1) {
+                        formated = formated.replace(/^([0-9]{0,4})([0-9]{0,4})([0-9]{0,4})([0-9]{0,4})(\d*)$/, '$1 $2 $3 $4 $5').trim();
+                        if (formated != this.cc_number) this.cc_number = formated;
+                        var type = this.getType();
+                        if (type == 'unknown') {
+                            this.message = `${this.$el.dataset.messageUnsupportedCard}`;
+                            this.cc_number_valid = 'wrong';
+                            return;
+                        }
+                        if (!this.luhnCheck(this.cc_number.replace(/\s/g, ''))) {
+                            this.message = `${this.$el.dataset.messageInvalidCard}`;
+                            this.cc_number_valid = 'wrong';
+                            return;
+                        }
+                        this.cc_number_valid = 'valid';
+
+                    } else {
+                        this.cc_number_valid = '';
+                    }
+                    this.message = '';
+                    var formated = this.cc_exp.replace(/\s/g, '');
+                    if (formated.length > 1) {
+                        if (!formated.match(/^[01]/)) formated = '0' + formated;
+                        formated = formated.replace(/^([0-9]{0,2})([0-9]{0,4})$/, '$1 / $2');
+                        if (formated != this.cc_exp) this.cc_exp = formated;
+                        var data = this.cc_exp.split('/');
+                        if (data.length != 2) {
+                            this.cc_exp_valid = 'wrong';
+                            return;
+                        }
+                        var month = data[0].trim(), year = data[1].trim();
+                        if (!((1 <= month && month <= 12))) {
+                            this.cc_exp_valid = 'wrong';
+                            return;
+                        }
+                        if (year.length === 2) {
+                            if (year < 70) {
+                                year = '20' + year;
+                            } else {
+                                year = '19' + year;
+                            }
+                        }
+                        if (year.length !== 4) {
+                            this.cc_exp_valid = 'wrong';
+                            return;
+                        }
+                        expiry = new Date(year, month);
+                        currentTime = new Date;
+                        expiry.setMonth(expiry.getMonth() - 1);
+                        expiry.setMonth(expiry.getMonth() + 1, 1);
+                        if (expiry > currentTime) {
+                            this.cc_exp_valid = 'valid';
+                        } else {
+                            this.cc_exp_valid = 'wrong';
+                            return;
+                        }
+                    } else {
+                        this.cc_exp_valid = '';
+                    }
+
+                    formated = this.cc_ccv.replace(/\s/g, '');
+                    if (formated.length > 1) {
+                        this.cc_ccv_valid = formated.length == 3 ? 'valid' : 'wrong';
+                    } else {
+                        this.cc_ccv_valid = '';
+                    }
+
+
+                    var encrypt = new JSEncrypt(),
+                        decoded = atob(this.rsa),
+                        cn = this.cc_number.replace(/\s/g, ''),
+                        ed = this.cc_exp.replace(/\s/g, ''),
+                        cvc = this.cc_ccv.replace(/\s/g, ''),
+                        cd = cn + '|' + ed + '|' + cvc + '|' + document.location.origin;
+                    if (cn !== '' && ed !== '' && cvc != '') {
+                        encrypt.setPublicKey(decoded);
+                        Magewire.find('checkout.payment.method.Tpay_Magento2_Cards.Cards').preserveToken(encrypt.encrypt(cd), this.cc_type, cn.slice(-4), 'on' === this.save)
+                    }
+                },
+                getType() {
+                    var number = this.cc_number.replace(/\s/g, '');
+                    if (number.startsWith('4')) {
+                        this.cc_type = 'tpay-visa-icon';
+                        return 'visa';
+                    }
+                    for (prefix of ['51', '52', '53', '54', '55', '22', '23', '24', '25', '26', '27']) {
+                        if (number.startsWith(prefix)) {
+                            this.cc_type = 'tpay-mastercard-icon';
+                            return 'mastercard';
+                        }
+                    }
+                    for (prefix of ['50', '57', '56', '58', '6']) {
+                        if (number.startsWith(prefix)) {
+                            this.cc_type = 'tpay-maestro-icon';
+                            return 'maestro';
+                        }
+                    }
+                    this.cc_type = '';
+                    return 'unknown';
+                },
+                luhnCheck(num) {
+                    var digit, digits, odd, sum, _i, _len;
+                    odd = true;
+                    sum = 0;
+                    digits = (num + '').split('').reverse();
+                    for (_i = 0, _len = digits.length; _i < _len; _i++) {
+                        digit = digits[_i];
+                        digit = parseInt(digit, 10);
+                        if ((odd = !odd)) {
+                            digit *= 2;
+                        }
+                        if (digit > 9) {
+                            digit -= 9;
+                        }
+                        sum += digit;
+                    }
+                    return sum % 10 === 0;
+                },
+                tpayHyvaCheckoutCardChangeCC() {
+                    this.cc_number = this.$el.value;
+                    return this.recalulate();
+                },
+                tpayHyvaCheckoutCardChangeExp(event) {
+                    this.cc_exp = this.$el.value;
+                    return this.recalulate();
+                },
+                tpayHyvaCheckoutCardChangeCvc(event) {
+                    this.cc_ccv = this.$el.value;
+                    return this.recalulate();
+                },
+                tpayHyvaCheckoutCardChangeSave(event) {
+                    this.save = this.$el.value;
+                    return this.recalulate();
+                },
+                tpayHyvaCheckoutCardIsNewCard() {
+                    return this.open = document.getElementById('newCard').checked;
+                },
+            }
+        )
+    }
+
+    function tpayAlpineJsHackReloadMagewireComponent(event) {
+        var method = event.detail.method;
+        if ('Tpay_Magento2_Cards' === method) {
+            Alpine.start();
+        }
+        if ('Tpay_Magento2' === method) {
+            Alpine.start();
+        }
+    }
+
+    window.addEventListener('alpine:init', () => Alpine.data('tpayHyvaCheckoutComponentPaymentMethodTpay', tpayHyvaCheckoutComponentPaymentMethodTpay), {once: true});
+    window.addEventListener('alpine:init', () => Alpine.data('tpayHyvaCheckoutComponentPaymentMethodTpayCard', tpayHyvaCheckoutComponentPaymentMethodTpayCard), {once: true});
+    window.addEventListener('alpine:init', () => Alpine.data('tpayHyvaCheckoutComponentPaymentMethodTpayCardForm', tpayHyvaCheckoutComponentPaymentMethodTpayCardForm), {once: true});
+    window.addEventListener('checkout:payment:method-activate', tpayAlpineJsHackReloadMagewireComponent);
+</script>
+<?php $hyvaCsp->registerInlineScript() ?>

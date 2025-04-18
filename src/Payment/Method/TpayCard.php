@@ -25,6 +25,7 @@ class TpayCard extends Component implements EvaluationInterface
         private readonly CartRepositoryInterface $quoteRepository,
         private readonly ConfigurationProvider $tPayConfigProvider,
         private readonly CardConfigFacade $cardConfigFacade,
+        // phpcs:ignore
     ) {}
 
     public function mount(): void
@@ -42,7 +43,7 @@ class TpayCard extends Component implements EvaluationInterface
         $quote->getPayment()->setAdditionalInformation('card_id', 'new_card' == $this->saved ? null : $this->saved);
         if ($this->save && 'new_card' == $this->saved) {
             $quote->getPayment()->setAdditionalInformation('card_save', true);
-            $quote->getPayment()->setAdditionalInformation('short_code', '****'.$this->suffix);
+            $quote->getPayment()->setAdditionalInformation('short_code', $this->suffix);
             $type = explode('-', $this->type);
             $quote->getPayment()->setAdditionalInformation('card_vendor', $type[1]);
         } else {

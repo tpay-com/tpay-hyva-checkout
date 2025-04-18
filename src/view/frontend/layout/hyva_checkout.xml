@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+>
+    <body>
+        <referenceContainer name="magewire.plugin.scripts">
+            <block name="component.payment.method.tpay"
+                   template="Tpay_HyvaCheckout::component/payment/method/tpay-csp-js.phtml"
+            />
+        </referenceContainer>
+    </body>
+</page>

@@ -16,6 +16,7 @@ class TpayGeneric extends Component implements EvaluationInterface
         private readonly SessionCheckout $sessionCheckout,
         private readonly CartRepositoryInterface $quoteRepository,
         private readonly ConfigurationProvider $tPayConfigProvider,
+        // phpcs:ignore
     ) {}
 
     public function mount(): void
