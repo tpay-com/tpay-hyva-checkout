@@ -11,6 +11,7 @@ class LayoutGenerateBlockAfter implements ObserverInterface
 {
     public function __construct(
         private readonly ScopeConfigInterface $scopeConfig
+        // phpcs:ignore
     ) {}
 
     public function execute(Observer $observer)

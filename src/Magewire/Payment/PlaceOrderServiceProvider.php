@@ -11,13 +11,13 @@ class PlaceOrderServiceProvider extends AbstractPlaceOrderService
 {
     public function __construct(
         CartManagementInterface $cartManagement,
-        private readonly TpayPayment $tPay,
+        private readonly TpayPayment $tpay,
     ) {
         parent::__construct($cartManagement);
     }
 
     public function getRedirectUrl(Quote $quote, ?int $orderId = null): string
     {
-        return $this->tPay->getPaymentRedirectUrl();
+        return $this->tpay->getPaymentRedirectUrl();
     }
 }

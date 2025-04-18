@@ -10,17 +10,18 @@ class TpayCards implements ArgumentInterface
 {
     public function __construct(
         private readonly SessionCheckout $sessionCheckout,
-        private readonly ConfigurationProvider $tPayConfigProvider,
+        private readonly ConfigurationProvider $tpayConfigProvider,
+        // phpcs:ignore
     ) {}
 
     public function canSaveCC(): bool
     {
         return !empty($this->sessionCheckout->getQuote()->getCustomerId())
-            && $this->tPayConfigProvider->getCardSaveEnabled();
+            && $this->tpayConfigProvider->getCardSaveEnabled();
     }
 
     public function getPublicKey(): string
     {
-        return $this->tPayConfigProvider->getRSAKey() ?? '';
+        return $this->tpayConfigProvider->getRSAKey() ?? '';
     }
 }

@@ -25,9 +25,10 @@ class Tpay extends Component implements EvaluationInterface
     public function __construct(
         private readonly SessionCheckout $sessionCheckout,
         private readonly CartRepositoryInterface $quoteRepository,
-        private readonly ConfigurationProvider $tPayConfigProvider,
+        private readonly ConfigurationProvider $tpayConfigProvider,
         private readonly ConfigFacade $configFacade,
         private readonly AliasRepository $aliasRepository,
+        // phpcs:ignore
     ) {}
 
     public function mount(): void
@@ -52,12 +53,12 @@ class Tpay extends Component implements EvaluationInterface
 
     public function getTerms()
     {
-        return $this->tPayConfigProvider->getTermsURL();
+        return $this->tpayConfigProvider->getTermsURL();
     }
 
     public function getRegulations()
     {
-        return $this->tPayConfigProvider->getRegulationsURL();
+        return $this->tpayConfigProvider->getRegulationsURL();
     }
 
     public function selectGroup(int $group)

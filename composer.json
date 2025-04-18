@@ -17,7 +17,7 @@
 		"hyva-themes/magento2-compat-module-fallback": "*",
 		"hyva-themes/magento2-hyva-checkout": "~1.1.13 || ~1.2.0",
 		"php": "^8.1",
-		"tpaycom/magento2basic": "*"
+		"tpaycom/magento2basic": "^2.2.0"
 	},
     "conflict": {
         "snowdog/module-hyva-checkout-tpay": "*"

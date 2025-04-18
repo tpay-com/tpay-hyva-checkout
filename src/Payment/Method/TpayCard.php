@@ -23,8 +23,9 @@ class TpayCard extends Component implements EvaluationInterface
     public function __construct(
         private readonly SessionCheckout $sessionCheckout,
         private readonly CartRepositoryInterface $quoteRepository,
-        private readonly ConfigurationProvider $tPayConfigProvider,
+        private readonly ConfigurationProvider $tpayConfigProvider,
         private readonly CardConfigFacade $cardConfigFacade,
+        // phpcs:ignore
     ) {}
 
     public function mount(): void
@@ -56,17 +57,17 @@ class TpayCard extends Component implements EvaluationInterface
     public function canSaveCC(): bool
     {
         return !empty($this->sessionCheckout->getQuote()->getCustomerId())
-            && $this->tPayConfigProvider->getCardSaveEnabled();
+            && $this->tpayConfigProvider->getCardSaveEnabled();
     }
 
     public function getTerms(): string
     {
-        return $this->tPayConfigProvider->getTermsURL();
+        return $this->tpayConfigProvider->getTermsURL();
     }
 
     public function getRegulations()
     {
-        return $this->tPayConfigProvider->getRegulationsURL();
+        return $this->tpayConfigProvider->getRegulationsURL();
     }
 
     public function preserveToken(string $token, string $type, string $suffix, bool $save): void
