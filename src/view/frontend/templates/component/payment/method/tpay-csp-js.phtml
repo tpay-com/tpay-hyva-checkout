@@ -39,6 +39,7 @@ use Magento\Framework\View\Element\Template;
                         ? this.showChannelsSection = false
                         : this.showChannelsSection = true;
                     this.showBlikInput = !this.$refs.blikAlias.checked;
+                    this.$refs.blikCode.value = this.$refs.blikCode.value.replaceAll(/\D/g, '');
                 },
             }
         )

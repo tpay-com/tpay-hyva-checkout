@@ -48,7 +48,7 @@ $issuers = $magewire->getIssuers();
                                             tabindex="1"
                                             value=""
                                             class="tpay-input-value tpay-blik-input"
-                                            @change="tpayHyvaHideOptions"
+                                            @input="tpayHyvaHideOptions"
                                             wire:model.lazy="blikCode"
                                     />
                                 </div>
