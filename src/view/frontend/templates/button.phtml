@@ -1,0 +1,27 @@
+<?php
+
+declare(strict_types=1);
+
+/** @var $viewModel \Tpay\Magento2\ViewModel\Order\Button */
+/** @var $block \Magento\Framework\View\Element\Template */
+/** @var $escaper \Magento\Framework\Escaper */
+/** @var ViewModelRegistry $viewModels */
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\HeroiconsOutline;
+
+$viewModel = $block->getViewModel();
+/** @var HeroiconsOutline $heroicons */
+$heroicons = $viewModels->require(HeroiconsOutline::class);
+
+?>
+
+<?php if ($viewModel->shouldShowButton() && $viewModel->getPaymentUrl()) : ?>
+    <a href="<?= $escaper->escapeUrl($viewModel->getPaymentUrl()) ?>"
+       class="btn btn-secondary"
+       target="_blank"
+       rel="noopener">
+        <?= $heroicons->linkHtml('mr-1 inline-block', 24, 24, ['aria-hidden' => 'true']); ?>
+        <span><?= $escaper->escapeHtml(__('Pay with Tpay')) ?></span>
+    </a>
+<?php endif; ?>
