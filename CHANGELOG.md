@@ -3,6 +3,7 @@
 ### 1.2.0
 
 Added compatybility with payment retry features from version 2.8.0 of main module
+Changed solution for alpine component reinitialization on alpine.js 3.14.3+
 
 ### 1.1.1
 
