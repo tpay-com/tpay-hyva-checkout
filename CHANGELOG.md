@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.2.0
+
+Added compatybility with payment retry features from version 2.8.0 of main module
+
 ### 1.1.1
 
 Added filter preventing non-digits from BLIK code input
