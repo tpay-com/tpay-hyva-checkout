@@ -211,20 +211,19 @@ use Magento\Framework\View\Element\Template;
             }
         )
     }
-
-    function tpayAlpineJsHackReloadMagewireComponent(event) {
-        var method = event.detail.method;
-        if ('Tpay_Magento2_Cards' === method) {
-            Alpine.start();
-        }
-        if ('Tpay_Magento2' === method) {
-            Alpine.start();
-        }
+    function tpayHyvaisAlpineJsVersionGreaterThen(v1, v2) {
+        return v1.split('.').map(Number).some((n, i) => n > (v2.split('.')[i] || 0) ? true : n < (v2.split('.')[i] || 0) ? false : false);
     }
 
     window.addEventListener('alpine:init', () => Alpine.data('tpayHyvaCheckoutComponentPaymentMethodTpay', tpayHyvaCheckoutComponentPaymentMethodTpay), {once: true});
     window.addEventListener('alpine:init', () => Alpine.data('tpayHyvaCheckoutComponentPaymentMethodTpayCard', tpayHyvaCheckoutComponentPaymentMethodTpayCard), {once: true});
     window.addEventListener('alpine:init', () => Alpine.data('tpayHyvaCheckoutComponentPaymentMethodTpayCardForm', tpayHyvaCheckoutComponentPaymentMethodTpayCardForm), {once: true});
-    window.addEventListener('checkout:payment:method-activate', tpayAlpineJsHackReloadMagewireComponent);
+    window.addEventListener('alpine:init', () => {
+        if (tpayHyvaisAlpineJsVersionGreaterThen(Alpine.version, '3.14.3')) {
+            Livewire.hook('message.processed', (message, component) => {
+                component.el.querySelectorAll('[x-data]').forEach(element => Alpine.initTree(element))
+            });
+        }
+    });
 </script>
 <?php $hyvaCsp->registerInlineScript() ?>
